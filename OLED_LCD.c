@@ -120,13 +120,13 @@ void enable_ports(void)
     GPIOC->PUPDR &= ~0xff;
     GPIOC->PUPDR |= 0x55;
 
-    /*//===========================================================================
+    //===========================================================================
     // Keypad 2
     //===========================================================================
-    // Enable port B
+    //Enable port B
     RCC->AHBENR |= RCC_AHBENR_GPIOBEN;
 
-    // Outputs (PC4-PC7)
+    // Outputs (PB4-PB7)
     GPIOB->MODER &= ~0xff00;
     GPIOB->MODER |= 0x5500;
 
@@ -134,12 +134,12 @@ void enable_ports(void)
     GPIOB->OTYPER &= ~0xf0;
     GPIOB->OTYPER |= 0xf0;
 
-    // Inputs (PC0-PC3)
+    // Inputs (PB0-PB3)
     GPIOB->MODER &= ~0xff;
 
     // Inputs pulled high
     GPIOB->PUPDR &= ~0xff;
-    GPIOB->PUPDR |= 0x55;*/
+    GPIOB->PUPDR |= 0x55;
 }
 
 void TIM7_IRQHandler()
@@ -151,11 +151,11 @@ void TIM7_IRQHandler()
     col = (col + 1) & 3;
     drive_column(col);
 
-    /*// Keypad 2
+    // Keypad 2
     int rows2 = read_rows2();
     update_history(col2, rows2);
     col2 = (col2 + 1) & 3;
-    drive_column2(col2); */
+    drive_column2(col2);
 }
 
 void init_tim7(void)
@@ -210,11 +210,15 @@ void controls(void)
         char cont = get_keypress();
         while (cont != '5')
             cont = get_keypress();
-        if (cont == '5')
+        if (cont == '5'){
             instruction();
+            return;
+        }
     }
-    else if (key == '2')
+    else if (key == '2'){
         shipcount();
+        return;
+    }
 }
 
 void instruction(void)
@@ -293,12 +297,22 @@ void shipcount(void)
     display[32] = 0x200+' ';
     display[33] = 0x200+'5';
     int x = 5;
+    int y = 5;
     for(;;) {
         char key = get_keypress();
                 if (x > 0)
-                    display[16] = numbers[x--];
+                    display[16] = numbers[--x];
                 else if (x == 0)
                     display[16] = numbers[0];
+
+    }
+    for(;;){
+        char key2 = get_keypress2();
+                if (y > 0)
+                    display[33] = numbers[--y];
+                else if (x == 0)
+                    display[33] = numbers[0];
+
     }
 }
 

@@ -24,11 +24,11 @@ uint16_t numbers[5] = { 0x200+'0',0x200+'1',0x200+'2',0x200+'3',0x200+'4'};
 // Displays String on LCD
 uint16_t display[34] = {
         0x002, // Command to set the cursor at the first position line 1
-        0x200+'P', 0x200+'1', 0x200+' ', 0x200+'S', 0x200+'h', + 0x200+'i', 0x200+'p', 0x200+' ',
-        0x200+'C', 0x200+'o', 0x200+'u', 0x200+'n', + 0x200+'t', 0x200+':', 0x200+' ', 0x200+'5',
+        0x200+'C', 0x200+'o', 0x200+' n', 0x200+'t', 0x200+'r', + 0x200+'o', 0x200+'l', 0x200+':',
+        0x200+' ', 0x200+'P', 0x200+'r', 0x200+'e', + 0x200+'s', 0x200+'s', 0x200+' ', 0x200+'5',
         0x0c0, // Command to set the cursor at the first position line 2
-        0x200+'P', 0x200+'2', 0x200+' ', 0x200+'S', 0x200+'h', + 0x200+'i', 0x200+'p', 0x200+' ',
-        0x200+'C', 0x200+'o', 0x200+'u', 0x200+'n', + 0x200+'t', 0x200+':', 0x200+' ', 0x200+'5',
+        0x200+'B', 0x200+'e', 0x200+'g', 0x200+'i', 0x200+'n', + 0x200+':', 0x200+' ', 0x200+' ',
+        0x200+' ', 0x200+'P', 0x200+'r', 0x200+'e', + 0x200+'s', 0x200+'s', 0x200+' ', 0x200+'2',
 };
 
 //===========================================================================
@@ -120,7 +120,7 @@ void enable_ports(void)
     GPIOC->PUPDR &= ~0xff;
     GPIOC->PUPDR |= 0x55;
 
-    //===========================================================================
+    /*//===========================================================================
     // Keypad 2
     //===========================================================================
     // Enable port B
@@ -139,7 +139,7 @@ void enable_ports(void)
 
     // Inputs pulled high
     GPIOB->PUPDR &= ~0xff;
-    GPIOB->PUPDR |= 0x55;
+    GPIOB->PUPDR |= 0x55;*/
 }
 
 void TIM7_IRQHandler()
@@ -168,6 +168,140 @@ void init_tim7(void)
     TIM7->CR1 |= 1<<0;
 }
 
+void controls(void)
+{
+    char key = get_keypress();
+    while (key != '5' && key != '2'){
+        key = get_keypress();
+    }
+    if (key == '5'){
+        display[1] = 0x200+'U';
+        display[2] = 0x200+'p';
+        display[3] = 0x200+'=';
+        display[4] = 0x200+'2';
+        display[5] = 0x200+' ';
+        display[6] = 0x200+'D';
+        display[7] = 0x200+'o';
+        display[8] = 0x200+'w';
+        display[9] = 0x200+'n';
+        display[10] = 0x200+'=';
+        display[11] = 0x200+'8';
+        display[12] = 0x200+' ';
+        display[13] = 0x200+' ';
+        display[14] = 0x200+' ';
+        display[15] = 0x200+' ';
+        display[16] = 0x200+' ';
+        display[18] = 0x200+'L';
+        display[19] = 0x200+'e';
+        display[20] = 0x200+'f';
+        display[21] = 0x200+'t';
+        display[22] = 0x200+'=';
+        display[23] = 0x200+'4';
+        display[24] = 0x200+' ';
+        display[25] = 0x200+'N';
+        display[26] = 0x200+'e';
+        display[27] = 0x200+'x';
+        display[28] = 0x200+'t';
+        display[29] = 0x200+'=';
+        display[30] = 0x200+'5';
+        display[31] = 0x200+' ';
+        display[32] = 0x200+' ';
+        display[33] = 0x200+' ';
+        char cont = get_keypress();
+        while (cont != '5')
+            cont = get_keypress();
+        if (cont == '5')
+            instruction();
+    }
+    else if (key == '2')
+        shipcount();
+}
+
+void instruction(void)
+{
+        display[1] = 0x200+'R';
+        display[2] = 0x200+'i';
+        display[3] = 0x200+'g';
+        display[4] = 0x200+'h';
+        display[5] = 0x200+'t';
+        display[6] = 0x200+'=';
+        display[7] = 0x200+'6';
+        display[8] = 0x200+' ';
+        display[9] = 0x200+'E';
+        display[10] = 0x200+'n';
+        display[11] = 0x200+'t';
+        display[12] = 0x200+'e';
+        display[13] = 0x200+'r';
+        display[14] = 0x200+'=';
+        display[15] = 0x200+'5';
+        display[16] = 0x200+' ';
+        display[18] = 0x200+'P';
+        display[19] = 0x200+'r';
+        display[20] = 0x200+'e';
+        display[21] = 0x200+'s';
+        display[22] = 0x200+'s';
+        display[23] = 0x200+' ';
+        display[24] = 0x200+'5';
+        display[25] = 0x200+' ';
+        display[26] = 0x200+'t';
+        display[27] = 0x200+'o';
+        display[28] = 0x200+' ';
+        display[29] = 0x200+'B';
+        display[30] = 0x200+'e';
+        display[31] = 0x200+'g';
+        display[32] = 0x200+'i';
+        display[33] = 0x200+'n';
+    char begin = get_keypress();
+    while (begin != '5')
+        begin = get_keypress();
+    if (begin == '5')
+        shipcount();
+}
+
+void shipcount(void)
+{
+    display[1] = 0x200+'P';
+    display[2] = 0x200+'1';
+    display[3] = 0x200+' ';
+    display[4] = 0x200+'S';
+    display[5] = 0x200+'h';
+    display[6] = 0x200+'i';
+    display[7] = 0x200+'p';
+    display[8] = 0x200+' ';
+    display[9] = 0x200+'C';
+    display[10] = 0x200+'o';
+    display[11] = 0x200+'u';
+    display[12] = 0x200+'n';
+    display[13] = 0x200+'t';
+    display[14] = 0x200+':';
+    display[15] = 0x200+' ';
+    display[16] = 0x200+'5';
+    display[18] = 0x200+'P';
+    display[19] = 0x200+'2';
+    display[20] = 0x200+' ';
+    display[21] = 0x200+'S';
+    display[22] = 0x200+'h';
+    display[23] = 0x200+'i';
+    display[24] = 0x200+'p';
+    display[25] = 0x200+' ';
+    display[26] = 0x200+'C';
+    display[27] = 0x200+'o';
+    display[28] = 0x200+'u';
+    display[29] = 0x200+'n';
+    display[30] = 0x200+'t';
+    display[31] = 0x200+':';
+    display[32] = 0x200+' ';
+    display[33] = 0x200+'5';
+    int x = 5;
+    for(;;) {
+        char key = get_keypress();
+                if (x > 0)
+                    display[16] = numbers[x--];
+                else if (x == 0)
+                    display[16] = numbers[0];
+    }
+}
+
 int main(void)
 {
     // OLED LCD Call
@@ -179,20 +313,5 @@ int main(void)
     // Keypad 1 (PC Inputs)
     enable_ports();
     init_tim7();
-    int x = 5;
-    char pad[16] = {'0','1', '2', '3', '4', '5', '6','7','8','9','A','B','C','D','*','#'}; //
-    for(;;) {
-        char key = get_keypress();
-        for (int y = 0; y <= 16; y++)
-        {
-            if(key == pad[y])
-            {
-                if (x > 0)
-                    display[16] = numbers[x--];
-                else if (x == 0)
-                    display[16] = numbers[0];
-            }
-        }
-    }
-
+    controls();
 }

@@ -9,10 +9,12 @@ void drive_column2(int);
 int  read_rows();         // read the four row inputs
 int read_rows2();
 void update_history(int col, int rows); // record the buttons of the driven column
-char get_key_event(void); // wait for a button event (press or release)
+void update_history2(int col, int rows); // record the buttons of the driven column
 char get_keypress(void);  // wait for only a button press event.
-float getfloat(void);     // read a floating-point number from keypad
-void show_keys(void);     // demonstrate get_key_event()
+void instruction(void);
+void controls(void);
+void shipcount(void);
+void spi_cmd(unsigned int);
 
 //===========================================================================
 // Global Variables
@@ -105,25 +107,25 @@ void enable_ports(void)
     // Enable port C
     RCC->AHBENR |= RCC_AHBENR_GPIOCEN;
 
-    // Outputs (PC4-PC7)
-    GPIOC->MODER &= ~0xff00;
-    GPIOC->MODER |= 0x5500;
+    // Outputs [Keypad 1: (PC4-PC7) | Keypad 2: (PC12-PC15)]
+    GPIOC->MODER &= ~0xff00ff00;
+    GPIOC->MODER |= 0x55005500;
 
     // Output type open-drain
-    GPIOC->OTYPER &= ~0xf0;
-    GPIOC->OTYPER |= 0xf0;
+    GPIOC->OTYPER &= ~0xf0f0;
+    GPIOC->OTYPER |= 0xf0f0;
 
-    // Inputs (PC0-PC3)
-    GPIOC->MODER &= ~0xff;
+    // Inputs [Keypad 1: (PC0-PC3) | Keypad 2: (PC8-PC11)]
+    GPIOC->MODER &= ~0xff00ff;
 
     // Inputs pulled high
-    GPIOC->PUPDR &= ~0xff;
-    GPIOC->PUPDR |= 0x55;
+    GPIOC->PUPDR &= ~0xff00ff;
+    GPIOC->PUPDR |= 0x550055;
 
     //===========================================================================
     // Keypad 2
     //===========================================================================
-    //Enable port B
+    /*//Enable port B
     RCC->AHBENR |= RCC_AHBENR_GPIOBEN;
 
     // Outputs (PB4-PB7)
@@ -140,6 +142,24 @@ void enable_ports(void)
     // Inputs pulled high
     GPIOB->PUPDR &= ~0xff;
     GPIOB->PUPDR |= 0x55;
+
+    //Enable port C
+    RCC->AHBENR |= RCC_AHBENR_GPIOCEN;
+
+    // Outputs (PC4-PC7)
+    GPIOC->MODER&= ~0xff00;
+    GPIOC->MODER |= 0x5500;
+
+    // Output type open-drain
+    GPIOC->OTYPER &= ~0xf0;
+    GPIOC->OTYPER |= 0xf0;
+
+    // Inputs (PC0-PC3)
+    GPIOC->MODER &= ~0xff;
+
+    // Inputs pulled high
+    GPIOC->PUPDR &= ~0xff;
+    GPIOC->PUPDR |= 0x55;*/
 }
 
 void TIM7_IRQHandler()
@@ -153,7 +173,7 @@ void TIM7_IRQHandler()
 
     // Keypad 2
     int rows2 = read_rows2();
-    update_history(col2, rows2);
+    update_history2(col2, rows2);
     col2 = (col2 + 1) & 3;
     drive_column2(col2);
 }
@@ -171,10 +191,10 @@ void init_tim7(void)
 void controls(void)
 {
     char key = get_keypress();
-    while (key != '5' && key != '2'){
+    while (key != '5' && key != ('5' | 0x80) && key != '2' && key != ('2' | 0x80)){
         key = get_keypress();
     }
-    if (key == '5'){
+    if (key == ('5' | 0x80) || key == '5'){
         display[1] = 0x200+'U';
         display[2] = 0x200+'p';
         display[3] = 0x200+'=';
@@ -208,17 +228,13 @@ void controls(void)
         display[32] = 0x200+' ';
         display[33] = 0x200+' ';
         char cont = get_keypress();
-        while (cont != '5')
+        while (cont != '5' && cont != ('5' | 0x80))
             cont = get_keypress();
-        if (cont == '5'){
+        if (cont == '5' || cont == ('5' | 0x80))
             instruction();
-            return;
-        }
     }
-    else if (key == '2'){
+    else if (key == '2' || key == ('2' | 0x80))
         shipcount();
-        return;
-    }
 }
 
 void instruction(void)
@@ -256,9 +272,9 @@ void instruction(void)
         display[32] = 0x200+'i';
         display[33] = 0x200+'n';
     char begin = get_keypress();
-    while (begin != '5')
+    while (begin != '5' && begin != ('5' | 0x80))
         begin = get_keypress();
-    if (begin == '5')
+    if (begin == '5' || begin == ('5' | 0x80))
         shipcount();
 }
 
@@ -300,19 +316,20 @@ void shipcount(void)
     int y = 5;
     for(;;) {
         char key = get_keypress();
+        if (key & 0x80)
+        {
                 if (x > 0)
                     display[16] = numbers[--x];
                 else if (x == 0)
                     display[16] = numbers[0];
-
-    }
-    for(;;){
-        char key2 = get_keypress2();
-                if (y > 0)
-                    display[33] = numbers[--y];
-                else if (x == 0)
-                    display[33] = numbers[0];
-
+        }
+        else
+        {
+            if (y>0)
+                display[33] = numbers[--y];
+            else if (y==0)
+                display[33] = numbers[0];
+        }
     }
 }
 

@@ -38,11 +38,11 @@ uint16_t display[34] = {
 //===========================================================================
 void spi1_setup_dma(void)
 {
-    RCC->AHBENR |= RCC_AHBENR_DMA1EN;//1<<0;
-    DMA1_Channel3->CCR &= ~DMA_CCR_EN;// ~(1<<0); // Disable Channel
-    DMA1_Channel3->CPAR = &(SPI1->DR);//&(GPIOB->ODR); // Set CPAR to the address of the GPIOB_ODR register.
+    RCC->AHBENR |= RCC_AHBENR_DMA1EN;
+    DMA1_Channel3->CCR &= ~DMA_CCR_EN;// Disable Channel
+    DMA1_Channel3->CPAR = &(SPI1->DR);// Set CPAR to the address of the SPI1_DR register.
     DMA1_Channel3->CMAR = (uint32_t)display; // Set CMAR to the display array base address
-    DMA1_Channel3->CNDTR = 34; // Set CNDTR to 16
+    DMA1_Channel3->CNDTR = 34; // Set CNDTR to 34
     DMA1_Channel3->CCR |= DMA_CCR_DIR; // Set the DIRection for copying from-memory-to-peripheral
     DMA1_Channel3->CCR |= DMA_CCR_MINC; // Set the MINC to increment the CMAR for every transfer.
     DMA1_Channel3->CCR |= DMA_CCR_MSIZE_0; // Set the memory datum size to 16-bit.
@@ -64,7 +64,6 @@ void init_spi1() {
 
     RCC->APB2ENR |= RCC_APB2ENR_SPI1EN;
     RCC->AHBENR |= RCC_AHBENR_GPIOAEN;
-    //GPIOA->ODR &= ~(0)
     GPIOA->MODER &= ~0xc000fc00;
     GPIOA->MODER |= 0x8000a800;
 
@@ -102,7 +101,7 @@ void small_delay(void) {
 void enable_ports(void)
 {
     //===========================================================================
-    // Key Pad 1
+    // Key Pad 1 & 2
     //===========================================================================
     // Enable port C
     RCC->AHBENR |= RCC_AHBENR_GPIOCEN;
@@ -121,45 +120,6 @@ void enable_ports(void)
     // Inputs pulled high
     GPIOC->PUPDR &= ~0xff00ff;
     GPIOC->PUPDR |= 0x550055;
-
-    //===========================================================================
-    // Keypad 2
-    //===========================================================================
-    /*//Enable port B
-    RCC->AHBENR |= RCC_AHBENR_GPIOBEN;
-
-    // Outputs (PB4-PB7)
-    GPIOB->MODER &= ~0xff00;
-    GPIOB->MODER |= 0x5500;
-
-    // Output type open-drain
-    GPIOB->OTYPER &= ~0xf0;
-    GPIOB->OTYPER |= 0xf0;
-
-    // Inputs (PB0-PB3)
-    GPIOB->MODER &= ~0xff;
-
-    // Inputs pulled high
-    GPIOB->PUPDR &= ~0xff;
-    GPIOB->PUPDR |= 0x55;
-
-    //Enable port C
-    RCC->AHBENR |= RCC_AHBENR_GPIOCEN;
-
-    // Outputs (PC4-PC7)
-    GPIOC->MODER&= ~0xff00;
-    GPIOC->MODER |= 0x5500;
-
-    // Output type open-drain
-    GPIOC->OTYPER &= ~0xf0;
-    GPIOC->OTYPER |= 0xf0;
-
-    // Inputs (PC0-PC3)
-    GPIOC->MODER &= ~0xff;
-
-    // Inputs pulled high
-    GPIOC->PUPDR &= ~0xff;
-    GPIOC->PUPDR |= 0x55;*/
 }
 
 void TIM7_IRQHandler()
@@ -335,14 +295,15 @@ void shipcount(void)
 
 int main(void)
 {
+    enable_ports();
+    
     // OLED LCD Call
     init_spi1();
     spi1_init_oled();
     spi1_setup_dma();
     spi1_enable_dma();
 
-    // Keypad 1 (PC Inputs)
-    enable_ports();
+    // Keypad 1 & 2
     init_tim7();
     controls();
 }

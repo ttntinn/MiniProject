@@ -41,7 +41,6 @@ void update_history(int c, int rows)
 
 void drive_column(int c)
 {
-    //GPIOC->BSRR = 0xf00000 | ~(1 << (c + 4));
     GPIOC->BSRR = 0xf00000 | (~(1 << (c + 4)) & 0xff00ff);
 
 }
@@ -73,7 +72,7 @@ char get_keypress() {
 }
 
 //===========================================================================
-// Keypad 2 Configurations: GPIOB
+// Keypad 2 Configurations: GPIOC
 //===========================================================================
 // 16 history bytes.  Each byte represents the last 8 samples of a button.
 uint8_t hist2[16];
@@ -93,13 +92,11 @@ void update_history2(int c, int rows)
 
 void drive_column2(int c)
 {
-    GPIOC->BSRR = 0xf0000000 | (~(1 << (c + 10)) & 0xff00ff00);
-    //GPIOB->BSRR = 0xf00000 | ~(1 << (c + 4));
+    GPIOC->BSRR = 0xf0000000 | ((~(1 << (c + 12)) & 0xf000f000));
 
 }
 
 int read_rows2()
 {
     return ((~GPIOC->IDR) & 0xf00) >> 8;
-    //return (~GPIOB->IDR) & 0xf;
 }

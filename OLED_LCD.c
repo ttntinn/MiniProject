@@ -13,9 +13,16 @@ void update_history2(int col, int rows); // record the buttons of the driven col
 char get_keypress(void);  // wait for only a button press event.
 void instruction(void);
 void controls(void);
+void game(uint16_t, uint16_t);
 void shipcount(void);
 void spi_cmd(unsigned int);
 void users_inputs(void);
+void error(void);
+void shipcount(void);
+void enter_number(void);
+void press_hash(void);
+void number_disp(uint16_t, uint16_t);
+
 
 //===========================================================================
 // Global Variables
@@ -24,10 +31,14 @@ uint16_t msg[8] = { 0x0000,0x0100,0x0200,0x0300,0x0400,0x0500,0x0600,0x0700 };
 uint8_t col; // the column being scanned
 uint8_t col2;
 uint16_t numbers[10] = { 0x200+'0',0x200+'1',0x200+'2',0x200+'3',0x200+'4',0x200+'5',0x200+'6',0x200+'7',0x200+'8',0x200+'9'};
+char keypad1_numbers[10] = {'0' | 0x80, '1' | 0x80, '2' | 0x80, '3' | 0x80, '4' | 0x80, '5' | 0x80, '6' | 0x80, '7' | 0x80, '8' | 0x80, '9' | 0x80};
+char keypad2_numbers[10] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
+char keypad1_char[6] = {'*' | 0x80, '#' | 0x80, 'D' | 0x80, 'C' | 0x80, 'B' | 0x80, 'A' | 0x80};
+char keypad2_char[6] = {'*', '#', 'D', 'C', 'B', 'A'};
 // Displays String on LCD
 uint16_t display[34] = {
         0x002, // Command to set the cursor at the first position line 1
-        0x200+'C', 0x200+'o', 0x200+' n', 0x200+'t', 0x200+'r', + 0x200+'o', 0x200+'l', 0x200+':',
+        0x200+'C', 0x200+'o', 0x200+'n', 0x200+'t', 0x200+'r', + 0x200+'o', 0x200+'l', 0x200+':',
         0x200+' ', 0x200+'P', 0x200+'r', 0x200+'e', + 0x200+'s', 0x200+'s', 0x200+' ', 0x200+'5',
         0x0c0, // Command to set the cursor at the first position line 2
         0x200+'B', 0x200+'e', 0x200+'g', 0x200+'i', 0x200+'n', + 0x200+':', 0x200+' ', 0x200+' ',
@@ -239,7 +250,211 @@ void instruction(void)
         shipcount();
 }
 
+void error(void)
+{
+    display[1] = 0x200+'E';
+    display[2] = 0x200+'r';
+    display[3] = 0x200+'r';
+    display[4] = 0x200+'o';
+    display[5] = 0x200+'r';
+    display[6] = 0x200+'!';
+    display[7] = 0x200+' ';
+    display[8] = 0x200+'E';
+    display[9] = 0x200+'n';
+    display[10] = 0x200+'t';
+    display[11] = 0x200+'e';
+    display[12] = 0x200+'r';
+    display[13] = 0x200+' ';
+    display[14] = 0x200+'0';
+    display[15] = 0x200+'-';
+    display[16] = 0x200+'9';
+    display[18] = 0x200+'o';
+    display[19] = 0x200+'n';
+    display[20] = 0x200+' ';
+    display[21] = 0x200+'t';
+    display[22] = 0x200+'h';
+    display[23] = 0x200+'e';
+    display[24] = 0x200+' ';
+    display[25] = 0x200+'K';
+    display[26] = 0x200+'e';
+    display[27] = 0x200+'y';
+    display[28] = 0x200+'p';
+    display[29] = 0x200+'a';
+    display[30] = 0x200+'d';
+    display[31] = 0x200+' ';
+    display[32] = 0x200+' ';
+    display[33] = 0x200+' ';
+    enter_number();
+}
+
 void shipcount(void)
+{
+    display[1] = 0x200+'H';
+    display[2] = 0x200+'o';
+    display[3] = 0x200+'w';
+    display[4] = 0x200+' ';
+    display[5] = 0x200+'M';
+    display[6] = 0x200+'a';
+    display[7] = 0x200+'n';
+    display[8] = 0x200+'y';
+    display[9] = 0x200+' ';
+    display[10] = 0x200+'S';
+    display[11] = 0x200+'h';
+    display[12] = 0x200+'i';
+    display[13] = 0x200+'p';
+    display[14] = 0x200+'s';
+    display[15] = 0x200+'?';
+    display[16] = 0x200+' ';
+    display[18] = 0x200+'P';
+    display[19] = 0x200+'r';
+    display[20] = 0x200+'e';
+    display[21] = 0x200+'s';
+    display[22] = 0x200+'s';
+    display[23] = 0x200+' ';
+    display[24] = 0x200+'#';
+    display[25] = 0x200+' ';
+    display[26] = 0x200+'t';
+    display[27] = 0x200+'o';
+    display[28] = 0x200+' ';
+    display[29] = 0x200+'E';
+    display[30] = 0x200+'n';
+    display[31] = 0x200+'t';
+    display[32] = 0x200+'e';
+    display[33] = 0x200+'r';
+    enter_number();
+}
+
+void enter_number(void)
+{
+    uint16_t ship_num1, ship_num2;
+    char keypad1_miss[6] = {'*' | 0x80, 'D' | 0x80, 'C' | 0x80, 'B' | 0x80, 'A' | 0x80};
+    char keypad2_miss[6] = {'*', 'D', 'C', 'B', 'A'};
+    // first digit
+    char first = get_keypress();
+    for (int k = 0; k <= 6; k++)
+    {
+        if (first == keypad1_char[k] || first == keypad2_char[k]){
+            error();
+            return;
+        }
+    }
+    for (int i = 0; i <= 10; i++)
+    {
+        if (first == keypad1_numbers[i] || first == keypad2_numbers[i]){
+            ship_num1 = numbers[i];
+            break;
+        }
+    }
+    ship_num2 = 0x200+' ';
+    number_disp(ship_num1, ship_num2);
+
+    // Second digit
+    char second = get_keypress();
+    for (int y = 0; y <= 6; y++)
+    {
+        if (second == keypad1_miss[y] || second == keypad2_miss[y]){
+            error();
+            return;
+        }
+    }
+    if (second == ('#' | 0x80) || second == '#')
+    {
+        ship_num2 = 0x200+' ';
+        number_disp(ship_num1, ship_num2);
+        game(ship_num1, ship_num2);
+    }
+    else
+    {
+        for (int j = 0; j <= 10; j++)
+        {
+            if (second == keypad1_numbers[j] || second == keypad2_numbers[j])
+                ship_num2 = numbers[j];
+        }
+        number_disp(ship_num1, ship_num2);
+        char enter = get_keypress();
+        while (enter != keypad1_char[1] && enter != keypad2_char[1])
+        {
+            press_hash();
+            enter = get_keypress();
+        }
+        if (enter == ('#' | 0x80) || enter == '#')
+            game(ship_num2, ship_num1);
+    }
+}
+
+void press_hash(void)
+{
+    display[1] = 0x200+'P';
+    display[2] = 0x200+'l';
+    display[3] = 0x200+'e';
+    display[4] = 0x200+'a';
+    display[5] = 0x200+'s';
+    display[6] = 0x200+'e';
+    display[7] = 0x200+' ';
+    display[8] = 0x200+'P';
+    display[9] = 0x200+'r';
+    display[10] = 0x200+'e';
+    display[11] = 0x200+'s';
+    display[12] = 0x200+'s';
+    display[13] = 0x200+' ';
+    display[14] = 0x200+'#';
+    display[15] = 0x200+' ';
+    display[16] = 0x200+' ';
+    display[18] = 0x200+'-';
+    display[19] = 0x200+'-';
+    display[20] = 0x200+'-';
+    display[21] = 0x200+'-';
+    display[22] = 0x200+'-';
+    display[23] = 0x200+'-';
+    display[24] = 0x200+'>';
+    display[25] = 0x200+'#';
+    display[26] = 0x200+'<';
+    display[27] = 0x200+'-';
+    display[28] = 0x200+'-';
+    display[29] = 0x200+'-';
+    display[30] = 0x200+'-';
+    display[31] = 0x200+'-';
+    display[32] = 0x200+'-';
+    display[33] = 0x200+'-';
+}
+
+void number_disp(uint16_t first, uint16_t second)
+{
+    display[1] = 0x200+'E';
+    display[2] = 0x200+'n';
+    display[3] = 0x200+'t';
+    display[4] = 0x200+'e';
+    display[5] = 0x200+'r';
+    display[6] = 0x200+'i';
+    display[7] = 0x200+'n';
+    display[8] = 0x200+'g';
+    display[9] = 0x200+':';
+    display[10] = 0x200+' ';
+    display[11] = first;
+    display[12] = second;
+    display[13] = 0x200+' ';
+    display[14] = 0x200+' ';
+    display[15] = 0x200+' ';
+    display[16] = 0x200+' ';
+    display[18] = 0x200+'P';
+    display[19] = 0x200+'r';
+    display[20] = 0x200+'e';
+    display[21] = 0x200+'s';
+    display[22] = 0x200+'s';
+    display[23] = 0x200+' ';
+    display[24] = 0x200+'#';
+    display[25] = 0x200+' ';
+    display[26] = 0x200+'t';
+    display[27] = 0x200+'o';
+    display[28] = 0x200+' ';
+    display[29] = 0x200+'E';
+    display[30] = 0x200+'n';
+    display[31] = 0x200+'t';
+    display[32] = 0x200+'e';
+    display[33] = 0x200+'r';
+}
+
+void game(uint16_t first, uint16_t second)
 {
     display[1] = 0x200+'P';
     display[2] = 0x200+'1';
@@ -255,8 +470,8 @@ void shipcount(void)
     display[12] = 0x200+'n';
     display[13] = 0x200+'t';
     display[14] = 0x200+':';
-    display[15] = 0x200+' ';
-    display[16] = 0x200+'5';
+    display[15] = second;
+    display[16] = first;
     display[18] = 0x200+'P';
     display[19] = 0x200+'2';
     display[20] = 0x200+' ';
@@ -271,17 +486,29 @@ void shipcount(void)
     display[29] = 0x200+'n';
     display[30] = 0x200+'t';
     display[31] = 0x200+':';
-    display[32] = 0x200+' ';
-    display[33] = 0x200+'5';
+    display[32] = second;
+    display[33] = first;
 }
 
 void users_inputs(void)
 {
-    int x = 5;
-    int y = 5;
-    int j = 0;
-    int k = 0;
+    int x, y, j, k;
     int size = (sizeof(numbers)/sizeof(numbers[0])-1);
+    for (int i=0; i<=size; i++)
+    {
+        if (display[16] == numbers[i])
+            x = i;
+        if (display[15] == numbers[i])
+            j = i;
+        else if (display[15] == 0x200+' ')
+            j = 0;
+        if (display[33] == numbers[i])
+            y = i;
+        if (display[32] == numbers[i])
+            k = i;
+        else if (display[32] == 0x200+' ')
+            k = 0;
+    }
     for(;;)
     {
         char key = get_keypress();
@@ -308,6 +535,18 @@ void users_inputs(void)
                     x = -1;
                 }
             }
+            if (key == ('6' | 0x80)){
+                if (x == 8 || x == 9){
+                    if (j == 9){
+                        x = 7;
+                        display[15] = numbers[size];
+                    }
+                    else if (x == 8){
+                        x = -2;
+                        display[15] = numbers[++j];
+                    }
+                }
+            }
         }
         // If decrementing key
         if (key == ('8' | 0x80) || key == ('4' | 0x80)){
@@ -325,6 +564,30 @@ void users_inputs(void)
             // Condition when P1 count is 0
             else if (x == 0 && j == 0)
                 x = 1;
+            if (key == ('4' | 0x80))
+            {
+                if (x == 1 && j == 1)
+                {
+                    --j;
+                    display[15] = 0x200+' ';
+                    x = 11;
+                }
+                else if (x == 0 && j == 0)
+                {
+                    display[15] = 0x200+' ';
+                    x = 2;
+                }
+                else if (x==1 && j == 0)
+                {
+                    display[15] = 0x200+' ';
+                    x = 2;
+                }
+                else if (x==1 && j>1)
+                {
+                    display[15] = numbers[--j];
+                    x = 11;
+                }
+            }
         }
         //===========================================================================
         // Player 2 Controls
@@ -340,6 +603,18 @@ void users_inputs(void)
                 else{
                     display[32] = numbers[++k];
                     y = -1;
+                }
+            }
+            if (key == '6'){
+                if (y == 8 || y == 9){
+                    if (k == 9){
+                        y = 7;
+                        display[32] = numbers[size];
+                    }
+                    else if (y == 8){
+                        y = -2;
+                        display[32] = numbers[++k];
+                    }
                 }
             }
         }
@@ -359,6 +634,26 @@ void users_inputs(void)
             // Condition when P1 count is 0
             else if (y == 0 && k == 0)
                 y = 1;
+            if (key == '4')
+            {
+                if (y == 1 && k == 1){
+                    --k;
+                    display[32] = 0x200+' ';
+                    y = 11;
+                }
+                else if (y == 0 && k == 0){
+                    display[32] = 0x200+' ';
+                    y = 2;
+                }
+                else if (y==1 && k==0){
+                    display[32] = 0x200+' ';
+                    y = 2;
+                }
+                else if (y==1 && k>1){
+                    display[32] = numbers[--k];
+                    y = 11;
+                }
+            }
         }
         //===========================================================================
         // Ship Count Calculations
@@ -373,16 +668,22 @@ void users_inputs(void)
         else if (key == ('8' | 0x80))
             display[16] = numbers[--x];
 
-        else if (key == '4')
+        else if (key == '4'){
+            --y;
             display[33] = numbers[--y];
-        else if (key == ('4' | 0x80))
+        }
+        else if (key == ('4' | 0x80)){
+            --x;
             display[16] = numbers[--x];
-
-        else if (key == '6')
+        }
+        else if (key == '6'){
+            ++y;
             display[33] = numbers[++y];
-        else if (key == ('6' | 0x80))
+        }
+        else if (key == ('6' | 0x80)){
+            ++x;
             display[16] = numbers[++x];
-
+        }
         else if (key == '5'){
             y = 5;
             k = 0;
@@ -397,6 +698,7 @@ void users_inputs(void)
         }
     }
 }
+
 int main(void)
 {
     enable_ports();

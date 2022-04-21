@@ -1,4 +1,5 @@
 #include "stm32f0xx.h"
+#include <string.h>
 
 //===========================================================================
 // Function Declarations
@@ -11,18 +12,11 @@ int read_rows2();
 void update_history(int col, int rows); // record the buttons of the driven column
 void update_history2(int col, int rows); // record the buttons of the driven column
 char get_keypress(void);  // wait for only a button press event.
-void instruction(void);
-void controls(void);
-void game(uint16_t, uint16_t);
-void shipcount(void);
+void instructions(void);
 void spi_cmd(unsigned int);
 void users_inputs(void);
-void error(void);
-void shipcount(void);
 void enter_number(void);
-void press_hash(void);
-void number_disp(uint16_t, uint16_t);
-
+void display_string(char []);
 
 //===========================================================================
 // Global Variables
@@ -44,6 +38,7 @@ uint16_t display[34] = {
         0x200+'B', 0x200+'e', 0x200+'g', 0x200+'i', 0x200+'n', + 0x200+':', 0x200+' ', 0x200+' ',
         0x200+' ', 0x200+'P', 0x200+'r', 0x200+'e', + 0x200+'s', 0x200+'s', 0x200+' ', 0x200+'2',
 };
+int display_size = sizeof(display)/sizeof(display[0]) - 1;
 
 //===========================================================================
 // Functions
@@ -160,334 +155,133 @@ void init_tim7(void)
     TIM7->CR1 |= 1<<0;
 }
 
-void controls(void)
+void instructions(void)
 {
+    char instruct1 []= "Up=2 Down=8     Left=4 Next=5";
+    char instruct2 []= "Right=6 Enter=5 Press 5 to begin";
+    char ShipCount []= "How many ships? Press # to Enter";
     char key = get_keypress();
     while (key != '5' && key != ('5' | 0x80) && key != '2' && key != ('2' | 0x80)){
         key = get_keypress();
     }
     if (key == ('5' | 0x80) || key == '5'){
-        display[1] = 0x200+'U';
-        display[2] = 0x200+'p';
-        display[3] = 0x200+'=';
-        display[4] = 0x200+'2';
-        display[5] = 0x200+' ';
-        display[6] = 0x200+'D';
-        display[7] = 0x200+'o';
-        display[8] = 0x200+'w';
-        display[9] = 0x200+'n';
-        display[10] = 0x200+'=';
-        display[11] = 0x200+'8';
-        display[12] = 0x200+' ';
-        display[13] = 0x200+' ';
-        display[14] = 0x200+' ';
-        display[15] = 0x200+' ';
-        display[16] = 0x200+' ';
-        display[18] = 0x200+'L';
-        display[19] = 0x200+'e';
-        display[20] = 0x200+'f';
-        display[21] = 0x200+'t';
-        display[22] = 0x200+'=';
-        display[23] = 0x200+'4';
-        display[24] = 0x200+' ';
-        display[25] = 0x200+'N';
-        display[26] = 0x200+'e';
-        display[27] = 0x200+'x';
-        display[28] = 0x200+'t';
-        display[29] = 0x200+'=';
-        display[30] = 0x200+'5';
-        display[31] = 0x200+' ';
-        display[32] = 0x200+' ';
-        display[33] = 0x200+' ';
+        display_string(instruct1);
         char cont = get_keypress();
         while (cont != '5' && cont != ('5' | 0x80))
             cont = get_keypress();
-        if (cont == '5' || cont == ('5' | 0x80))
-            instruction();
+        if (cont == '5' || cont == ('5' | 0x80)){
+            display_string(instruct2);
+            char begin = get_keypress();
+            while (begin != '5' && begin != ('5' | 0x80))
+                begin = get_keypress();
+            if (begin == '5' || begin == ('5' | 0x80)){
+                display_string(ShipCount);
+                enter_number();
+            }
+        }
     }
-    else if (key == '2' || key == ('2' | 0x80))
-        shipcount();
-}
-
-void instruction(void)
-{
-        display[1] = 0x200+'R';
-        display[2] = 0x200+'i';
-        display[3] = 0x200+'g';
-        display[4] = 0x200+'h';
-        display[5] = 0x200+'t';
-        display[6] = 0x200+'=';
-        display[7] = 0x200+'6';
-        display[8] = 0x200+' ';
-        display[9] = 0x200+'E';
-        display[10] = 0x200+'n';
-        display[11] = 0x200+'t';
-        display[12] = 0x200+'e';
-        display[13] = 0x200+'r';
-        display[14] = 0x200+'=';
-        display[15] = 0x200+'5';
-        display[16] = 0x200+' ';
-        display[18] = 0x200+'P';
-        display[19] = 0x200+'r';
-        display[20] = 0x200+'e';
-        display[21] = 0x200+'s';
-        display[22] = 0x200+'s';
-        display[23] = 0x200+' ';
-        display[24] = 0x200+'5';
-        display[25] = 0x200+' ';
-        display[26] = 0x200+'t';
-        display[27] = 0x200+'o';
-        display[28] = 0x200+' ';
-        display[29] = 0x200+'B';
-        display[30] = 0x200+'e';
-        display[31] = 0x200+'g';
-        display[32] = 0x200+'i';
-        display[33] = 0x200+'n';
-    char begin = get_keypress();
-    while (begin != '5' && begin != ('5' | 0x80))
-        begin = get_keypress();
-    if (begin == '5' || begin == ('5' | 0x80))
-        shipcount();
-}
-
-void error(void)
-{
-    display[1] = 0x200+'E';
-    display[2] = 0x200+'r';
-    display[3] = 0x200+'r';
-    display[4] = 0x200+'o';
-    display[5] = 0x200+'r';
-    display[6] = 0x200+'!';
-    display[7] = 0x200+' ';
-    display[8] = 0x200+'E';
-    display[9] = 0x200+'n';
-    display[10] = 0x200+'t';
-    display[11] = 0x200+'e';
-    display[12] = 0x200+'r';
-    display[13] = 0x200+' ';
-    display[14] = 0x200+'0';
-    display[15] = 0x200+'-';
-    display[16] = 0x200+'9';
-    display[18] = 0x200+'o';
-    display[19] = 0x200+'n';
-    display[20] = 0x200+' ';
-    display[21] = 0x200+'t';
-    display[22] = 0x200+'h';
-    display[23] = 0x200+'e';
-    display[24] = 0x200+' ';
-    display[25] = 0x200+'K';
-    display[26] = 0x200+'e';
-    display[27] = 0x200+'y';
-    display[28] = 0x200+'p';
-    display[29] = 0x200+'a';
-    display[30] = 0x200+'d';
-    display[31] = 0x200+' ';
-    display[32] = 0x200+' ';
-    display[33] = 0x200+' ';
-    enter_number();
-}
-
-void shipcount(void)
-{
-    display[1] = 0x200+'H';
-    display[2] = 0x200+'o';
-    display[3] = 0x200+'w';
-    display[4] = 0x200+' ';
-    display[5] = 0x200+'M';
-    display[6] = 0x200+'a';
-    display[7] = 0x200+'n';
-    display[8] = 0x200+'y';
-    display[9] = 0x200+' ';
-    display[10] = 0x200+'S';
-    display[11] = 0x200+'h';
-    display[12] = 0x200+'i';
-    display[13] = 0x200+'p';
-    display[14] = 0x200+'s';
-    display[15] = 0x200+'?';
-    display[16] = 0x200+' ';
-    display[18] = 0x200+'P';
-    display[19] = 0x200+'r';
-    display[20] = 0x200+'e';
-    display[21] = 0x200+'s';
-    display[22] = 0x200+'s';
-    display[23] = 0x200+' ';
-    display[24] = 0x200+'#';
-    display[25] = 0x200+' ';
-    display[26] = 0x200+'t';
-    display[27] = 0x200+'o';
-    display[28] = 0x200+' ';
-    display[29] = 0x200+'E';
-    display[30] = 0x200+'n';
-    display[31] = 0x200+'t';
-    display[32] = 0x200+'e';
-    display[33] = 0x200+'r';
-    enter_number();
+    else if (key == '2' || key == ('2' | 0x80)){
+        display_string(ShipCount);
+        enter_number();
+    }
 }
 
 void enter_number(void)
 {
-    uint16_t ship_num1, ship_num2;
     char keypad1_miss[6] = {'*' | 0x80, 'D' | 0x80, 'C' | 0x80, 'B' | 0x80, 'A' | 0x80};
     char keypad2_miss[6] = {'*', 'D', 'C', 'B', 'A'};
+    char error[] = "Error! Enter 0-9 on the Keypad";
+    char numb[] = "Entering: xx    Press # to Enter";
+    char game[] = "P1 Ship Count:xxP2 Ship Count:xx";
+    char hash[] = "Please Press #  ------>#<-------";
+    char ones, tens;
+
     // first digit
     char first = get_keypress();
     for (int k = 0; k <= 6; k++)
     {
         if (first == keypad1_char[k] || first == keypad2_char[k]){
-            error();
+            display_string(error);
+            enter_number();
             return;
         }
     }
     for (int i = 0; i <= 10; i++)
     {
         if (first == keypad1_numbers[i] || first == keypad2_numbers[i]){
-            ship_num1 = numbers[i];
+            ones = keypad2_numbers[i];
             break;
         }
     }
-    ship_num2 = 0x200+' ';
-    number_disp(ship_num1, ship_num2);
+    numb[10] = ones;
+    numb[11] = ' ';
+    display_string(numb);
 
     // Second digit
     char second = get_keypress();
     for (int y = 0; y <= 6; y++)
     {
         if (second == keypad1_miss[y] || second == keypad2_miss[y]){
-            error();
+            display_string(error);
+            enter_number();
             return;
         }
     }
     if (second == ('#' | 0x80) || second == '#')
     {
-        ship_num2 = 0x200+' ';
-        number_disp(ship_num1, ship_num2);
-        game(ship_num1, ship_num2);
+        numb[11] = ' ';
+        game[14] = ' ';
+        game[15] = ones;
+        game[30] = ' ';
+        game[31] = ones;
+        display_string(numb);
+        display_string(game);
     }
     else
     {
         for (int j = 0; j <= 10; j++)
         {
             if (second == keypad1_numbers[j] || second == keypad2_numbers[j])
-                ship_num2 = numbers[j];
+                tens = keypad2_numbers[j];
         }
-        number_disp(ship_num1, ship_num2);
+        numb[11] = tens;
+        display_string(numb);
         char enter = get_keypress();
         while (enter != keypad1_char[1] && enter != keypad2_char[1])
         {
-            press_hash();
+            display_string(hash);
             enter = get_keypress();
         }
-        if (enter == ('#' | 0x80) || enter == '#')
-            game(ship_num2, ship_num1);
+        if (enter == ('#' | 0x80) || enter == '#'){
+            game[15] = tens;
+            game[14] = ones;
+            game[31] = tens;
+            game[30] = ones;
+            display_string(game);
+
+        }
     }
 }
 
-void press_hash(void)
+void display_string(char string [])
 {
-    display[1] = 0x200+'P';
-    display[2] = 0x200+'l';
-    display[3] = 0x200+'e';
-    display[4] = 0x200+'a';
-    display[5] = 0x200+'s';
-    display[6] = 0x200+'e';
-    display[7] = 0x200+' ';
-    display[8] = 0x200+'P';
-    display[9] = 0x200+'r';
-    display[10] = 0x200+'e';
-    display[11] = 0x200+'s';
-    display[12] = 0x200+'s';
-    display[13] = 0x200+' ';
-    display[14] = 0x200+'#';
-    display[15] = 0x200+' ';
-    display[16] = 0x200+' ';
-    display[18] = 0x200+'-';
-    display[19] = 0x200+'-';
-    display[20] = 0x200+'-';
-    display[21] = 0x200+'-';
-    display[22] = 0x200+'-';
-    display[23] = 0x200+'-';
-    display[24] = 0x200+'>';
-    display[25] = 0x200+'#';
-    display[26] = 0x200+'<';
-    display[27] = 0x200+'-';
-    display[28] = 0x200+'-';
-    display[29] = 0x200+'-';
-    display[30] = 0x200+'-';
-    display[31] = 0x200+'-';
-    display[32] = 0x200+'-';
-    display[33] = 0x200+'-';
-}
-
-void number_disp(uint16_t first, uint16_t second)
-{
-    display[1] = 0x200+'E';
-    display[2] = 0x200+'n';
-    display[3] = 0x200+'t';
-    display[4] = 0x200+'e';
-    display[5] = 0x200+'r';
-    display[6] = 0x200+'i';
-    display[7] = 0x200+'n';
-    display[8] = 0x200+'g';
-    display[9] = 0x200+':';
-    display[10] = 0x200+' ';
-    display[11] = first;
-    display[12] = second;
-    display[13] = 0x200+' ';
-    display[14] = 0x200+' ';
-    display[15] = 0x200+' ';
-    display[16] = 0x200+' ';
-    display[18] = 0x200+'P';
-    display[19] = 0x200+'r';
-    display[20] = 0x200+'e';
-    display[21] = 0x200+'s';
-    display[22] = 0x200+'s';
-    display[23] = 0x200+' ';
-    display[24] = 0x200+'#';
-    display[25] = 0x200+' ';
-    display[26] = 0x200+'t';
-    display[27] = 0x200+'o';
-    display[28] = 0x200+' ';
-    display[29] = 0x200+'E';
-    display[30] = 0x200+'n';
-    display[31] = 0x200+'t';
-    display[32] = 0x200+'e';
-    display[33] = 0x200+'r';
-}
-
-void game(uint16_t first, uint16_t second)
-{
-    display[1] = 0x200+'P';
-    display[2] = 0x200+'1';
-    display[3] = 0x200+' ';
-    display[4] = 0x200+'S';
-    display[5] = 0x200+'h';
-    display[6] = 0x200+'i';
-    display[7] = 0x200+'p';
-    display[8] = 0x200+' ';
-    display[9] = 0x200+'C';
-    display[10] = 0x200+'o';
-    display[11] = 0x200+'u';
-    display[12] = 0x200+'n';
-    display[13] = 0x200+'t';
-    display[14] = 0x200+':';
-    display[15] = second;
-    display[16] = first;
-    display[18] = 0x200+'P';
-    display[19] = 0x200+'2';
-    display[20] = 0x200+' ';
-    display[21] = 0x200+'S';
-    display[22] = 0x200+'h';
-    display[23] = 0x200+'i';
-    display[24] = 0x200+'p';
-    display[25] = 0x200+' ';
-    display[26] = 0x200+'C';
-    display[27] = 0x200+'o';
-    display[28] = 0x200+'u';
-    display[29] = 0x200+'n';
-    display[30] = 0x200+'t';
-    display[31] = 0x200+':';
-    display[32] = second;
-    display[33] = first;
+    int j = 0;
+    int diff = 0;
+    int string_size = strlen(string);
+    if (string_size < display_size-1)
+        diff = display_size - string_size;
+    for (int i = 0; i <= display_size; i++)
+    {
+        if (i != 0 && i != 17)
+        {
+            if (j >= display_size - diff)
+                display[i] = 0x200+' ';
+            else{
+                display[i] = 0x200+string[j];
+                j++;
+            }
+        }
+    }
 }
 
 void users_inputs(void)
@@ -711,7 +505,7 @@ int main(void)
 
     // Keypad 1 & 2
     init_tim7();
-    controls();
+    instructions();
 
     users_inputs();
 }

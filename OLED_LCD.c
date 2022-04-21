@@ -15,6 +15,7 @@ void instruction(void);
 void controls(void);
 void shipcount(void);
 void spi_cmd(unsigned int);
+void users_inputs(void);
 
 //===========================================================================
 // Global Variables
@@ -22,7 +23,7 @@ void spi_cmd(unsigned int);
 uint16_t msg[8] = { 0x0000,0x0100,0x0200,0x0300,0x0400,0x0500,0x0600,0x0700 };
 uint8_t col; // the column being scanned
 uint8_t col2;
-uint16_t numbers[5] = { 0x200+'0',0x200+'1',0x200+'2',0x200+'3',0x200+'4'};
+uint16_t numbers[10] = { 0x200+'0',0x200+'1',0x200+'2',0x200+'3',0x200+'4',0x200+'5',0x200+'6',0x200+'7',0x200+'8',0x200+'9'};
 // Displays String on LCD
 uint16_t display[34] = {
         0x002, // Command to set the cursor at the first position line 1
@@ -141,7 +142,7 @@ void TIM7_IRQHandler()
 void init_tim7(void)
 {
     RCC->APB1ENR |= 1<<5;
-    TIM7->PSC = 480-1;
+    TIM7->PSC = 48-1;
     TIM7->ARR = 100-1;
     TIM7->DIER |= 1<<0;
     NVIC->ISER[0] = 1<<TIM7_IRQn;
@@ -272,31 +273,134 @@ void shipcount(void)
     display[31] = 0x200+':';
     display[32] = 0x200+' ';
     display[33] = 0x200+'5';
+}
+
+void users_inputs(void)
+{
     int x = 5;
     int y = 5;
-    for(;;) {
+    int j = 0;
+    int k = 0;
+    int size = (sizeof(numbers)/sizeof(numbers[0])-1);
+    for(;;)
+    {
         char key = get_keypress();
-        if (key & 0x80)
-        {
-                if (x > 0)
-                    display[16] = numbers[--x];
-                else if (x == 0)
-                    display[16] = numbers[0];
+        while (key != ('2' | 0x80) && key != '2' &&
+                key != ('4' | 0x80) && key != '4' &&
+                key != ('5' | 0x80) && key != '5' &&
+                key != ('6' | 0x80) && key != '6' &&
+                key != ('8' | 0x80) && key != '8'){
+            key = get_keypress();
         }
-        else
-        {
-            if (y>0)
-                display[33] = numbers[--y];
-            else if (y==0)
-                display[33] = numbers[0];
+        //===========================================================================
+        // Player 1 Controls
+        //===========================================================================
+        // Incrementing P1 count
+        if (key == ('2' | 0x80) || key == ('6' | 0x80)){
+            if (x >= size){
+                if (j == size && x == size){
+                    display[16] = numbers[size];
+                    display[15] = numbers[size];
+                    x = 8;
+                }
+                else{
+                    display[15] = numbers[++j];
+                    x = -1;
+                }
+            }
+        }
+        // If decrementing key
+        if (key == ('8' | 0x80) || key == ('4' | 0x80)){
+            // Condition when P1 count = 10
+            if (x == 0 && j == 1){
+                --j;
+                display[15] = 0x200+' ';
+                x = size + 1;
+            }
+            // Condition when P1 count is tens (except 10) 20, 30, 40, 50...
+            else if (x == 0 && j > 1){
+                display[15] = numbers[--j];
+                x = size + 1;
+            }
+            // Condition when P1 count is 0
+            else if (x == 0 && j == 0)
+                x = 1;
+        }
+        //===========================================================================
+        // Player 2 Controls
+        //===========================================================================
+        // Incrementing P2 count
+        if (key == '2' || key == '6'){
+            if (y >= size){
+                if (k == size && y == size){
+                    display[33] = numbers[size];
+                    display[32] = numbers[size];
+                    y = 8;
+                }
+                else{
+                    display[32] = numbers[++k];
+                    y = -1;
+                }
+            }
+        }
+        // If decrementing key
+        if (key == '8' || key == '4'){
+            // Condition when P1 count = 10
+            if (y == 0 && k == 1){
+                --k;
+                display[32] = 0x200+' ';
+                y = size + 1;
+            }
+            // Condition when P1 count is tens (except 10) 20, 30, 40, 50...
+            else if (y == 0 && k > 1){
+                display[32] = numbers[--k];
+                y = size + 1;
+            }
+            // Condition when P1 count is 0
+            else if (y == 0 && k == 0)
+                y = 1;
+        }
+        //===========================================================================
+        // Ship Count Calculations
+        //===========================================================================
+        if (key == '2' )
+            display[33] = numbers[++y];
+        else if (key == ('2' | 0x80))
+            display[16] = numbers[++x];
+
+        else if (key == '8')
+            display[33] = numbers[--y];
+        else if (key == ('8' | 0x80))
+            display[16] = numbers[--x];
+
+        else if (key == '4')
+            display[33] = numbers[--y];
+        else if (key == ('4' | 0x80))
+            display[16] = numbers[--x];
+
+        else if (key == '6')
+            display[33] = numbers[++y];
+        else if (key == ('6' | 0x80))
+            display[16] = numbers[++x];
+
+        else if (key == '5'){
+            y = 5;
+            k = 0;
+            display[33] = numbers[y];
+            display[32] = 0x200+' ';
+        }
+        else if (key == ('5' | 0x80)){
+            x = 5;
+            j = 0;
+            display[16] = numbers[x];
+            display[15] = 0x200+' ';
         }
     }
 }
-
 int main(void)
 {
     enable_ports();
-    
+
     // OLED LCD Call
     init_spi1();
     spi1_init_oled();
@@ -306,4 +410,6 @@ int main(void)
     // Keypad 1 & 2
     init_tim7();
     controls();
+
+    users_inputs();
 }

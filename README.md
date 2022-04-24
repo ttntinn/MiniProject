@@ -1,3 +1,0 @@
-# MiniProject
-
-read me

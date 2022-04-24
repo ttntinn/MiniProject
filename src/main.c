@@ -94,8 +94,8 @@ Ship p2_ship3 = {.len=3, .row=31, .col=0, .rotate='v', .alive=true};
 Ship p2_ship4 = {.len=3, .row=31, .col=0, .rotate='v', .alive=true};
 Ship* p2_ships[5] = {&p2_ship0, &p2_ship1, &p2_ship2, &p2_ship3, &p2_ship4}; //Array of p2_ships
 
-int p1_shipnum = 0;
-int p2_shipnum = 0;
+unsigned int p1_shipnum = 0;
+unsigned int p2_shipnum = 0;
 
 // Init placing
 bool p1_place_done = false;
@@ -463,6 +463,7 @@ void TIM6_DAC_IRQHandler()
       {
         copy_ships(); // copy p1 ships to p2_screen array
         init_points();
+        update_turn(1);
         game_mode='g';
       }
     if (!p1_place_done) p1_placing_handler(key);
@@ -476,12 +477,10 @@ void TIM6_DAC_IRQHandler()
     }
     if (p1_turn) 
     {
-      update_turn(1);
       p1_playing(key);
     }
     else 
     {
-      update_turn(2);
       p2_playing(key);
     }
   }
@@ -634,7 +633,7 @@ void displayShip(Ship *ship, bool place, int player){
     if (ship->rotate == 'v'){
       for (int i = 0; i < ship->len; i++){
         if (place) 
-          p1_screen[ship->row - i][ship->col] |= (1<<7 | (p1_shipnum<<3));
+          p1_screen[ship->row - i][ship->col] |= (1<<7 | (p1_shipnum<<3 & 0x10));
         else
           p1_screen[ship->row - i][ship->col] |= 0x7;
       }
@@ -642,7 +641,7 @@ void displayShip(Ship *ship, bool place, int player){
     else {
       for (int i =0; i<ship->len; i++) {
         if (place)
-          p1_screen[ship->row][ship->col+i] |= (1<<7 | (p1_shipnum<<3)) ;
+          p1_screen[ship->row][ship->col+i] |= (1<<7 | (p1_shipnum<<3 & 0x10)) ;
         else
           p1_screen[ship->row][ship->col+i] |= 0x7;
       }
@@ -652,7 +651,7 @@ void displayShip(Ship *ship, bool place, int player){
     if (ship->rotate == 'v'){
       for (int i = 0; i < ship->len; i++){
         if (place) 
-          p2_screen[ship->row - i][ship->col] |= (1<<7 | (p2_shipnum<<3));
+          p2_screen[ship->row - i][ship->col] |= (1<<7 | (p2_shipnum<<3 & 0x10));
         else
           p2_screen[ship->row - i][ship->col] |= 0x7;
       }
@@ -660,7 +659,7 @@ void displayShip(Ship *ship, bool place, int player){
     else {
       for (int i =0; i<ship->len; i++) {
         if (place)
-          p2_screen[ship->row][ship->col+i] |= (1<<7 | (p2_shipnum<<3)) ;
+          p2_screen[ship->row][ship->col+i] |= (1<<7 | (p2_shipnum<<3 & 0x10)) ;
         else
           p2_screen[ship->row][ship->col+i] |= 0x7;
       }
@@ -904,8 +903,8 @@ void checkSink(Ship * ship, int player) {
       p1_shipnum--;
     }
   }
-
 }
+
 void hit_handler(player) {
   hit = true;
   //mark hit, turn white, check for which ship is hit, then check sink
@@ -948,6 +947,7 @@ void fire(int player) {
     } 
       
     p1_turn = false;
+    update_turn(2);
     p2_turn = true;
   }
   else {
@@ -961,6 +961,7 @@ void fire(int player) {
       p2_screen[p2_tarRow][p2_tarCol] |= 1<<5 | 1<<2;
     } 
     p2_turn = false;
+    update_turn(1);
     p1_turn = true;
   }
 }

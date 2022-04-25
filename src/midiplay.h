@@ -20,5 +20,9 @@ extern unsigned char midifile[];
 extern unsigned char pirates[];
 extern unsigned char end[];
 extern unsigned char imagine[];
+extern unsigned char DONE[];
+extern unsigned char POKE[];
+extern unsigned char place[];
+
 
 #endif /* __MIDIPLAY_H__ */

@@ -1,4 +1,4 @@
- #include "stm32f0xx.h"
+#include "stm32f0xx.h"
 #include "ship.h"
 #include "midi.h"
 #include "midiplay.h"
@@ -170,10 +170,10 @@ uint16_t p1_screen [32][16] = {
   {0,0,0,0,7,7,7,7,7,7,7,4,4,4,4,4},
   {0,0,0,0,0,0,0,0,7,7,7,4,4,4,4,4},
   {3,3,0,0,0,0,0,7,7,7,7,4,4,4,4,4},
-  {3,3,3,0,0,0,7,7,7,7,7,7,4,4,4,4},
-  {3,3,3,3,0,0,7,7,7,7,7,0,4,4,4,4},
+  {3,3,3,0,0,0,0,7,7,7,7,7,4,4,4,4},
+  {3,3,3,3,0,0,0,7,7,7,7,0,4,4,4,4},
   {3,3,3,3,3,0,0,0,0,0,0,0,0,4,4,4},
-  {3,3,3,3,3,0,0,0,0,0,0,0,0,0,0,4},
+  {3,3,3,3,3,0,0,0,0,0,0,0,0,0,4,4},
 };
 
 //Game Screen Player 2
@@ -206,80 +206,80 @@ uint16_t p2_screen [32][16] = {
   {0,0,0,0,7,7,7,7,7,7,7,4,4,4,4,4},
   {0,0,0,0,0,0,0,0,7,7,7,4,4,4,4,4},
   {3,3,0,0,0,0,0,7,7,7,7,4,4,4,4,4},
-  {3,3,3,0,0,0,7,7,7,7,7,7,4,4,4,4},
-  {3,3,3,3,0,0,7,7,7,7,7,0,4,4,4,4},
+  {3,3,3,0,0,0,0,7,7,7,7,7,4,4,4,4},
+  {3,3,3,3,0,0,0,7,7,7,7,0,4,4,4,4},
   {3,3,3,3,3,0,0,0,0,0,0,0,0,4,4,4},
-  {3,3,3,3,3,0,0,0,0,0,0,0,0,0,0,4},
+  {3,3,3,3,3,0,0,0,0,0,0,0,0,0,4,4},
 };
 
 uint16_t win_screen [32][16] = {
-  {0,7,7,7,0,0,0,0,0,0,0,0,0,0,0,0},
-  {0,7,7,7,0,0,0,0,0,0,0,0,0,0,0,0},
-  {0,0,7,7,7,7,7,7,7,7,7,7,7,7,0,0},
-  {0,0,0,0,0,0,0,0,0,0,0,0,7,7,7,0},
-  {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-  {0,0,0,0,2,2,0,0,0,0,2,2,0,0,0,0},
-  {0,0,0,0,2,2,0,0,0,0,2,2,7,7,0,0},
-  {0,7,7,0,2,2,0,2,2,0,2,2,0,0,0,0},
-  {0,7,7,0,2,2,2,0,0,2,2,2,0,0,0,0},
-  {0,0,7,0,0,2,0,7,7,7,2,7,7,7,0,0},
-  {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-  {0,0,0,0,2,2,2,2,2,2,2,2,7,7,7,0},
-  {0,0,0,0,0,0,0,2,2,0,0,0,7,7,7,0},
-  {0,7,7,7,7,7,7,2,2,7,7,7,7,7,0,0},
-  {0,7,7,7,7,7,7,2,2,7,7,7,7,7,0,0},
-  {0,0,0,0,2,2,2,2,2,2,2,2,0,0,0,0},
-  {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-  {0,0,0,0,2,2,0,0,0,0,2,2,0,0,0,0},
-  {0,0,0,0,2,2,2,0,0,0,2,2,0,0,0,0},
-  {0,0,0,0,2,2,0,2,0,0,2,2,0,0,0,0},
-  {0,0,0,0,2,2,0,0,2,0,2,2,0,0,0,0},
-  {0,0,0,0,2,2,0,0,0,2,2,2,0,0,0,0},
-  {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-  {0,0,0,0,0,0,1,1,1,0,0,0,7,7,7,0},
-  {0,0,0,0,0,1,1,1,1,1,0,0,7,7,7,0},
-  {0,0,0,0,1,3,3,3,3,1,1,0,7,7,7,0},
-  {0,0,0,1,1,3,0,0,0,3,1,1,7,7,7,0},
-  {0,0,0,1,1,1,3,0,0,3,1,0,7,7,7,0},
-  {0,0,0,7,7,1,1,3,3,1,7,7,7,7,0,0},
-  {0,0,7,7,7,7,1,1,1,7,7,7,7,7,0,0},
-  {0,0,0,0,0,0,0,0,0,0,0,0,7,7,7,0},
-  {0,7,7,7,7,7,7,7,7,7,7,7,7,7,0,0},
+  {2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2},
+  {2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2},
+  {2,0,2,2,0,0,0,0,0,0,0,0,2,2,0,2},
+  {2,0,2,2,0,0,0,0,0,0,0,0,2,2,0,2},
+  {2,0,0,2,2,0,0,2,2,0,0,2,2,0,0,2},
+  {2,0,0,2,2,0,0,2,2,0,0,2,2,0,0,2},
+  {2,0,0,0,2,2,0,2,2,0,2,2,0,0,0,2},
+  {2,0,0,0,2,2,0,2,2,0,2,2,0,0,0,2},
+  {2,0,0,0,2,2,0,2,2,0,2,2,0,0,0,2},
+  {2,0,0,0,0,2,2,2,2,2,2,0,0,0,0,2},
+  {2,0,0,0,0,0,2,0,0,2,0,0,0,0,0,2},
+  {2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2},
+  {2,0,0,2,2,2,2,2,2,2,2,2,2,0,0,2},
+  {2,0,0,2,2,2,2,2,2,2,2,2,2,0,0,2},
+  {2,0,0,0,0,0,0,2,2,0,0,0,0,0,0,2},
+  {2,0,0,0,0,0,0,2,2,0,0,0,0,0,0,2},
+  {2,0,0,0,0,0,0,2,2,0,0,0,0,0,0,2},
+  {2,0,0,0,0,0,0,2,2,0,0,0,0,0,0,2},
+  {2,0,0,2,2,2,2,2,2,2,2,2,2,0,0,2},
+  {2,0,0,2,2,2,2,2,2,2,2,2,2,0,0,2},
+  {2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2},
+  {2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2},
+  {2,0,0,2,2,2,0,0,0,0,0,2,2,0,0,2},
+  {2,0,0,2,2,2,0,0,0,0,0,2,2,0,0,2},
+  {2,0,0,2,2,2,2,0,0,0,0,2,2,0,0,2},
+  {2,0,0,2,2,0,2,2,0,0,0,2,2,0,0,2},
+  {2,0,0,2,2,0,0,2,2,0,0,2,2,0,0,2},
+  {2,0,0,2,2,0,0,0,2,2,2,2,2,0,0,2},
+  {2,0,0,2,2,0,0,0,0,2,2,2,2,0,0,2},
+  {2,0,0,2,2,0,0,0,0,0,0,2,2,0,0,2},
+  {2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2},
+  {2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2},
 };
 
 uint16_t lose_screen [32][16] = {
-  {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-  {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-  {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-  {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-  {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-  {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-  {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-  {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-  {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-  {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-  {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-  {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-  {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-  {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-  {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-  {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-  {0,0,0,0,0,0,0,0,0,0,0,0,0,,0,0},
-  {0,0,0,0,0,0,0,0,0,1,1,1,1,1,0,0},
-  {0,0,1,1,0,0,0,0,0,0,0,0,1,1,0,0},
-  {0,0,1,1,0,0,0,0,0,0,0,0,1,1,0,0},
-  {0,0,1,1,0,0,0,0,0,0,0,0,1,1,0,0},
-  {0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0},
-  {0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0},
-  {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-  {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-  {0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0},
-  {0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0},
-  {0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0},
-  {0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0},
-  {0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0},
-  {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-  {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+  {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,1,1,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,1,1,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,1,1,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,1,1,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,1,1,1,1,1,1,1,0,0,0,0,1},
+  {1,0,0,0,1,1,1,1,1,1,1,0,0,0,0,1},
+  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,0,1,1,1,1,1,1,0,0,0,0,1},
+  {1,0,0,0,1,1,1,1,1,1,1,1,0,0,0,1},
+  {1,0,0,0,1,1,0,0,0,0,1,1,0,0,0,1},
+  {1,0,0,0,1,1,1,1,1,1,1,1,0,0,0,1},
+  {1,0,0,0,0,1,1,1,1,1,1,0,0,0,0,1},
+  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,0,1,1,1,1,1,1,1,0,0,0,1},
+  {1,0,0,0,1,1,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,1,1,1,1,1,1,1,0,0,0,0,1},
+  {1,0,0,0,0,1,1,1,1,1,1,1,0,0,0,1},
+  {1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1},
+  {1,0,0,0,1,1,1,1,1,1,1,1,0,0,0,1},
+  {1,0,0,0,1,1,1,1,1,1,1,0,0,0,0,1},
+  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,1,1,1,1,1,1,1,1,0,0,0,1},
+  {1,0,0,0,1,1,1,1,1,1,1,1,0,0,0,1},
+  {1,0,0,0,1,1,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,1,1,1,1,1,0,0,0,0,0,0,1},
+  {1,0,0,0,1,1,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,1,1,1,1,1,1,1,1,0,0,0,1},
+  {1,0,0,0,1,1,1,1,1,1,1,1,0,0,0,1},
+  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
  
 };
 // uint8_t *** p_screen = malloc(sizeof(uint8_t**) * 2);
@@ -667,6 +667,8 @@ int main(void)
   init_dac();
   init_tim2();
   MIDI_Player *mp = midi_init(pirates);
+
+  
   init_tim3(10417);
 
   
@@ -678,6 +680,9 @@ int main(void)
 
 
   while(1) {
+    if(mp->nexttick == MAXTICKS){
+      mp = midi_init(pirates);
+    }
     for (int col =0; col <8; col++) {
       // transferScreen();
       for (int row = 32; row > -1; row--) {
@@ -702,11 +707,12 @@ int main(void)
 
 
 void rotate_ship(Ship * ship, int player) {
-  if (player == 1) {
-    deleteShip(ship, 1);
-    if (ship->rotate == 'v') 
-      {ship->rotate ='h';}
-    else 
+  if ((ship->col< (16 - ship->len)) && (ship->row - ship->len + 1 > 16)){
+    if (player == 1) {
+      deleteShip(ship, 1);
+      if (ship->rotate == 'v') 
+        {ship->rotate ='h';}
+      else 
       {ship->rotate = 'v';}
     displayShip(ship, false, 1);    
   }
@@ -718,6 +724,9 @@ void rotate_ship(Ship * ship, int player) {
       {ship->rotate = 'v';}
     displayShip(ship, false, 2);        
   }
+    
+  }
+
 
 }
 
@@ -832,9 +841,17 @@ void moveShip(Ship * ship, int moveVal, int player){
   if (player == 1) {
     deleteShip(ship, 1);
     if (moveVal == 2){ //move up
-      if ((ship->row - ship->len + 1) > 17) {
-        ship->row -= 1;
+      if (ship->rotate == 'v'){
+        if ((ship->row - ship->len + 1) > 17) {
+          ship->row -= 1;
+        }
       }
+      else {
+          if ((ship->row ) > 17) {
+          ship->row -= 1;
+        }
+      }
+
     }
     else if (moveVal == 8){ //move down
       if (ship->row < 30){
@@ -848,19 +865,34 @@ void moveShip(Ship * ship, int moveVal, int player){
       
     }
     else { //move right
-      if ((ship->col + ship->len) < 15){
-        ship->col += 1;
+      if (ship->rotate == 'v'){
+        if (ship->col < 14){
+          ship->col += 1;
+        }
       }
-        
+      else {
+        if ((ship->col + ship->len) < 15){
+          ship->col += 1;
+        }
+      }
+
     }
     displayShip(ship, false, 1);
   }
   else {
     deleteShip(ship, 2);
-     if (moveVal == 2){ //move up
-      if ((ship->row - ship->len + 1) > 17) {
-        ship->row -= 1;
+    if (moveVal == 2){ //move up
+      if (ship->rotate == 'v'){
+        if ((ship->row - ship->len + 1) > 17) {
+          ship->row -= 1;
+        }
       }
+      else {
+          if ((ship->row ) > 17) {
+          ship->row -= 1;
+        }
+      }
+
     }
     else if (moveVal == 8){ //move down
       if (ship->row < 30){
@@ -873,11 +905,18 @@ void moveShip(Ship * ship, int moveVal, int player){
       }
       
     }
-    else { //move right
-      if ((ship->col + ship->len) < 15){
-        ship->col += 1;
+   else { //move right
+      if (ship->rotate == 'v'){
+        if (ship->col < 14){
+          ship->col += 1;
+        }
       }
-        
+      else {
+        if ((ship->col + ship->len) < 15){
+          ship->col += 1;
+        }
+      }
+
     }
     displayShip(ship, false, 2);
   }
@@ -993,7 +1032,7 @@ void display_string(char string [])
 void init_tim15(void)
 {
     RCC->APB2ENR |= RCC_APB2ENR_TIM15EN;
-    TIM15->PSC = 48000-1;
+    TIM15->PSC = 4800-1;
     TIM15->ARR = 200-1;
     TIM15->DIER |= TIM_DIER_UIE;
     NVIC->ISER[0] = 1<<20;
@@ -1021,9 +1060,9 @@ void TIM15_IRQHandler()
   else if (game_mode == 'g')
     display_string(game);
   else if (game_mode == 'e'){
-    if (p1_shipnum == 0)
+    if (player1_ships == 0)
       endGame[7] = '2';
-    else if (p2_shipnum == 0)
+    else if (player2_ships == 0)
       endGame[7] = '1';
     display_string(endGame);
   }
@@ -1144,43 +1183,87 @@ void displayWinner() {
   for (int row=0; row<32; row++){
     for (int col=0; col<16; col++) {
       if (p1_win)
+      {
         p1_screen[row][col] = win_screen[row][col];
+        p2_screen[row][col] = lose_screen[row][col];
+      }
+        
       else
+      {
         p2_screen[row][col] = win_screen[row][col];
+        p1_screen[row][col] = lose_screen[row][col];
+      }
+
     }
   }  
 }
 
 
-void TIM2_IRQHandler(void){
-  TIM2->SR &= ~TIM_SR_UIF;
-  //GPIOA->IDR = 0xf;
-  int sample = 0;
-  for(int x=0; x < sizeof voice / sizeof voice[0]; x++) {
-    if (voice[x].in_use) {
-        voice[x].offset += voice[x].step;
-        if (voice[x].offset >= N<<16)
-            voice[x].offset -= N<<16;
-          sample += (wavetable[voice[x].offset>>16] * (voice[x].volume)) >> 4;
+
+void TIM2_IRQHandler(void)
+{
+    // TODO: Remember to acknowledge the interrupt right here.
+    TIM2->SR &= ~TIM_SR_UIF;
+   // GPIOA->IDR = 0xf;
+    int sample = 0;
+    for(int x=0; x < sizeof voice / sizeof voice[0]; x++) {
+        if (voice[x].in_use) {
+            voice[x].offset += voice[x].step;
+            if (voice[x].offset >= N<<16)
+                voice[x].offset -= N<<16;
+            sample += (wavetable[voice[x].offset>>16] * (voice[x].volume )) >> 4;
+
         }
     }
-  sample = (sample >> 10) + 2048;
-  if (sample > 4095)
-    sample = 4095;
-  else if (sample < 0)
-    sample = 0;
-  DAC->DHR12R1 = sample;
+    sample = (sample >> 10) + 2048;
+    if (sample > 4095)
+        sample = 4095;
+    else if (sample < 0)
+        sample = 0;
+
+    DAC->DHR12R1 = sample ;
 }
+
+// Initialize the DAC so that it can output analog samples
+// on PA4.  Configure it to be triggered by TIM6 TRGO.
+int check(){
+    if (GPIOA->IDR & GPIO_IDR_0){
+        return (0);
+
+    }
+    else {
+        return 1;
+    }
+}
+
+int stop(){
+    if (GPIOA->IDR & GPIO_IDR_0){
+        return (0);
+
+    }
+    else {
+        return 1;
+    }
+}
+
+
 
 void init_dac(void)
 {
+    // TODO: you fill this in.
     RCC->APB1ENR |= RCC_APB1ENR_DACEN;
     DAC->CR |= DAC_CR_TEN1;
     DAC->CR &= ~(DAC_CR_TSEL1);
     DAC->CR |= DAC_CR_TSEL1_2;
     DAC->CR |= DAC_CR_EN1;
+
 }
 
+// Initialize Timer 6 so that it calls TIM6_DAC_IRQHandler
+// at exactly RATE times per second.  You'll need to select
+// a PSC value and then do some math on the system clock rate
+// to determine the value to set for ARR.  Set it to trigger
+// the DAC by enabling the Update Tigger in the CR2 MMS field.
 void init_tim2(void)
 {
     // TODO: you fill this in.
@@ -1195,7 +1278,7 @@ void init_tim2(void)
     NVIC_SetPriority(TIM2_IRQn,0);
 }
 
-
+// Find the voice current playing a note, and turn it off.
 void note_off(int time, int chan, int key, int velo)
 {
     int n;
@@ -1240,9 +1323,30 @@ void set_tempo(int time, int value, const MIDI_Header *hdr)
     TIM3->ARR = value/hdr->divisions - 1;
 }
 
+const float pitch_array[] = {
+0.943874, 0.945580, 0.947288, 0.948999, 0.950714, 0.952432, 0.954152, 0.955876,
+0.957603, 0.959333, 0.961067, 0.962803, 0.964542, 0.966285, 0.968031, 0.969780,
+0.971532, 0.973287, 0.975046, 0.976807, 0.978572, 0.980340, 0.982111, 0.983886,
+0.985663, 0.987444, 0.989228, 0.991015, 0.992806, 0.994599, 0.996396, 0.998197,
+1.000000, 1.001807, 1.003617, 1.005430, 1.007246, 1.009066, 1.010889, 1.012716,
+1.014545, 1.016378, 1.018215, 1.020054, 1.021897, 1.023743, 1.025593, 1.027446,
+1.029302, 1.031162, 1.033025, 1.034891, 1.036761, 1.038634, 1.040511, 1.042390,
+1.044274, 1.046160, 1.048051, 1.049944, 1.051841, 1.053741, 1.055645, 1.057552,
+};
 
+void pitch_wheel_change(int time, int chan, int value)
+{
+    //float multiplier = pow(STEP1, (value - 8192.0) / 8192.0);
+    float multiplier = pitch_array[value >> 8];
+    for(int n=0; n<sizeof voice / sizeof voice[0]; n++) {
+        if (voice[n].in_use && voice[n].chan == chan) {
+            voice[n].step = step[voice[n].note] * multiplier;
+        }
+    }
+}
 
-
+// An array of structures that say when to turn notes on or off.
+#if 0
 struct {
     int when;
     uint8_t note;
@@ -1270,34 +1374,9 @@ struct {
         {15368,91,0x00}, {15460,93,0x00},
 };
 
+//reading the midi file to determine when notes are supposed to be on or off
 int time = 0;
 int n = 0;
-
-
-uint8_t notes[] = { 60,62,64,65,67,69,71,72,71,69,67,65,64,62,60,0 };
-uint8_t num = sizeof notes / sizeof notes[0] - 1;
-const float pitch_array[] = {
-0.943874, 0.945580, 0.947288, 0.948999, 0.950714, 0.952432, 0.954152, 0.955876,
-0.957603, 0.959333, 0.961067, 0.962803, 0.964542, 0.966285, 0.968031, 0.969780,
-0.971532, 0.973287, 0.975046, 0.976807, 0.978572, 0.980340, 0.982111, 0.983886,
-0.985663, 0.987444, 0.989228, 0.991015, 0.992806, 0.994599, 0.996396, 0.998197,
-1.000000, 1.001807, 1.003617, 1.005430, 1.007246, 1.009066, 1.010889, 1.012716,
-1.014545, 1.016378, 1.018215, 1.020054, 1.021897, 1.023743, 1.025593, 1.027446,
-1.029302, 1.031162, 1.033025, 1.034891, 1.036761, 1.038634, 1.040511, 1.042390,
-1.044274, 1.046160, 1.048051, 1.049944, 1.051841, 1.053741, 1.055645, 1.057552,
-};
-
-void pitch_wheel_change(int time, int chan, int value)
-{
-    //float multiplier = pow(STEP1, (value - 8192.0) / 8192.0);
-    float multiplier = pitch_array[value >> 8];
-    for(int n=0; n<sizeof voice / sizeof voice[0]; n++) {
-        if (voice[n].in_use && voice[n].chan == chan) {
-            voice[n].step = step[voice[n].note] * multiplier;
-        }
-    }
-}
-
 void TIM3_IRQHandler(void)
 {
     // TODO: Remember to acknowledge the interrupt here!
@@ -1319,7 +1398,38 @@ void TIM3_IRQHandler(void)
         time = 0;
     }
 }
+#endif
 
+#if 0
+uint8_t notes[] = { 60,62,64,65,67,69,71,72,71,69,67,65,64,62,60,0 };
+uint8_t num = sizeof notes / sizeof notes[0] - 1;
+void TIM3_IRQHandler(void)
+{
+    // TODO: remember to acknowledge the interrupt here!
+    TIM3->SR &= ~TIM_SR_UIF;
+    // turn off previous note
+    note_off(0,0,notes[num],128);
+    // advance to next note
+    num = (num + 1) % (sizeof notes / sizeof notes[0]);
+    // turn on note
+    note_on(0,0,notes[num],128);
+}
+#endif
+
+void TIM3_IRQHandler(void)
+{
+    // TODO: Remember to acknowledge the interrupt right here!
+    TIM3->SR &= ~TIM_SR_UIF;
+    midi_play();
+}
+// Configure timer 2 so that it invokes the Update interrupt
+// every n microseconds.  To do so, set the prescaler to divide
+// by 48.  Then the CNT will count microseconds up to the ARR value.
+// Basically ARR = n-1
+// Set the ARPE bit in the CR1 so that the timer waits until the next
+// update before changing the effective ARR value.
+// Call NVIC_SetPriority() to set a low priority for Timer 2 interrupt.
+// See the lab 6 text to understand how to do so.
 void init_tim3(int n) {
     // TODO: you fill this in.
     RCC->APB1ENR |= RCC_APB1ENR_TIM3EN;
@@ -1329,6 +1439,6 @@ void init_tim3(int n) {
     TIM3->CR1 |= TIM_CR1_CEN;
     NVIC->ISER[0] |= 1<<TIM3_IRQn;
     TIM3->CR1 |= TIM_CR1_ARPE;
-    NVIC_SetPriority(TIM3_IRQn,1);
+    NVIC_SetPriority(TIM3_IRQn,3);
 }
 

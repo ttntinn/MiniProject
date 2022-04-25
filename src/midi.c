@@ -307,4 +307,3 @@ MIDI_Player *midi_init(const uint8_t *file_start)
   player.nexttick = 0;
   return &player;
 }
-

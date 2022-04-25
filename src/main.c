@@ -124,7 +124,7 @@ void init_tim7(void)
     NVIC_SetPriority(TIM7_IRQn,3);
 }
 
-#define KPRATE 100
+#define KPRATE 10000
 #define NUMSHIP 5
 
 // Init game
@@ -721,6 +721,9 @@ int main(void)
     if(mp->nexttick == MAXTICKS){
         mp = midi_init(pirates);
     }
+    if(game_mode == 'e'){
+        mp = midi_init(end);
+    }
     for (int col =0; col <8; col++) {
       // transferScreen();
       for (int row = 32; row > -1; row--) {
@@ -1110,6 +1113,7 @@ void TIM15_IRQHandler()
 void checkSink(Ship * ship, int player) {
   if (ship->hit == ship->len) {
     sink_sound = true;
+    effectOffset_sunk = 0;
     ship->alive = false;
     if (player == 1) {
       if (p2_shipnum == 0) {
@@ -1133,7 +1137,7 @@ void hit_handler(player) {
   if (player == 1) {
     p1_screen[p1_tarRow][p1_tarCol] |= 1<<6 | 0x7;
     p2_screen[p1_tarRow+16][p1_tarCol] &= ~0x7;
-    p2_screen[p1_tarRow+16][p1_tarCol] |= 0x4;
+    p2_screen[p1_tarRow+16][p1_tarCol] |= 0x3;
     unsigned int ship_hit = (p1_screen[p1_tarRow][p1_tarCol] & 0x38) >> 3;
     p2_ships[ship_hit] -> hit += 1;
     checkSink( p2_ships[ship_hit], player);
@@ -1141,12 +1145,13 @@ void hit_handler(player) {
   else {
     p2_screen[p2_tarRow][p2_tarCol] |= 1<<6 | 0x7;
     p1_screen[p2_tarRow+16][p2_tarCol] &= ~0x7;
-    p1_screen[p2_tarRow+16][p2_tarCol] |= 0x4;
+    p1_screen[p2_tarRow+16][p2_tarCol] |= 0x3;
     unsigned int ship_hit = (p2_screen[p2_tarRow][p2_tarCol] & 0x38) >> 3;
     p1_ships[ship_hit] -> hit += 1;
     checkSink( p1_ships[ship_hit], player);
   }
   hit_sound = true;
+  effectOffset_hit = 0;
 }
 
 void fire(int player) {
@@ -1172,8 +1177,11 @@ void fire(int player) {
     //miss mark blue, mark it miss in the screen
     else {
       miss_sound = true;
+      effectOffset_miss = 0;
       p1_screen[p1_tarRow][p1_tarCol] &= ~0x7;
       p1_screen[p1_tarRow][p1_tarCol] |= 1<<8 | 1<<2;
+      p2_screen[p1_tarRow+16][p1_tarCol] &= ~0x7;
+      p2_screen[p1_tarRow+16][p1_tarCol] |= 0x4;
     }
 
     p1_turn = false;
@@ -1189,8 +1197,11 @@ void fire(int player) {
     //miss mark blue, mark it miss in the screen
     else {
       miss_sound = true;
+      effectOffset_miss = 0;
       p2_screen[p2_tarRow][p2_tarCol] &= ~0x7;
       p2_screen[p2_tarRow][p2_tarCol] |= 1<<8 | 1<<2;
+      p1_screen[p2_tarRow+16][p2_tarCol] &= ~0x7;
+      p1_screen[p2_tarRow+16][p2_tarCol] |= 0x4;
     }
     p2_turn = false;
     update_turn(1);
@@ -1263,18 +1274,27 @@ void TIM2_IRQHandler(void)
         }
     }
     if(sink_sound){
-      sample += 9000* sunk[effectOffset_sunk];
+      hit_sound = false;
+      miss_sound =false;
+      effectOffset_hit = 0;
+      effectOffset_miss = 0;
+
+      sample += 10000* sunk[effectOffset_sunk];
       effectOffset_sunk += 1;
       if(effectOffset_sunk >= sizeof sunk){
         effectOffset_sunk = 0;
         sink_sound = false;
-        hit_sound = false;
        }
      }
 
     else if(hit_sound){
-         sample += 9000*HIT[effectOffset_hit] ;
-         effectOffset_hit+= 1;
+        sink_sound = false;
+        miss_sound =false;
+        effectOffset_sunk = 0;
+        effectOffset_miss = 0;
+
+        sample += 10000*HIT[effectOffset_hit] ;
+        effectOffset_hit+= 1;
         if(effectOffset_hit >= sizeof HIT){
              effectOffset_hit = 0;
              hit_sound = false;
@@ -1282,11 +1302,16 @@ void TIM2_IRQHandler(void)
      }
 
     else if(miss_sound){
-      sample += 9000* MISS[effectOffset_miss];
+      sink_sound = false;
+      hit_sound = false;
+      effectOffset_sunk = 0;
+      effectOffset_hit = 0;
+
+      sample += 10000* MISS[effectOffset_miss];
       effectOffset_miss += 1;
       if(effectOffset_miss >= sizeof MISS){
         effectOffset_miss = 0;
-        miss_sound = false;
+        miss_sound =false;
        }
      }
 
@@ -1301,25 +1326,6 @@ void TIM2_IRQHandler(void)
 
 // Initialize the DAC so that it can output analog samples
 // on PA4.  Configure it to be triggered by TIM6 TRGO.
-int check(){
-    if (GPIOA->IDR & GPIO_IDR_0){
-        return (0);
-
-    }
-    else {
-        return 1;
-    }
-}
-
-int stop(){
-    if (GPIOA->IDR & GPIO_IDR_0){
-        return (0);
-
-    }
-    else {
-        return 1;
-    }
-}
 
 
 
@@ -1478,7 +1484,7 @@ void TIM3_IRQHandler(void)
 #if 0
 uint8_t notes[] = { 60,62,64,65,67,69,71,72,71,69,67,65,64,62,60,0 };
 uint8_t num = sizeof notes / sizeof notes[0] - 1;
-void TIM3_IRQHandler(void)
+void TIM3_IRQHandler(void)4
 {
     // TODO: remember to acknowledge the interrupt here!
     TIM3->SR &= ~TIM_SR_UIF;

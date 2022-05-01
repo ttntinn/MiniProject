@@ -721,9 +721,6 @@ int main(void)
     if(mp->nexttick == MAXTICKS){
         mp = midi_init(pirates);
     }
-    if(game_mode == 'e'){
-        mp = midi_init(end);
-    }
     for (int col =0; col <8; col++) {
       // transferScreen();
       for (int row = 32; row > -1; row--) {
